@@ -10,13 +10,13 @@ def load_teacher_network():
 
     teacher = models.__dict__['resnext'](
                     cardinality=8,
-                    num_classes=100,
+                    num_classes=10,
                     depth=29,
                     widen_factor=4,
                     dropRate=0,
                 )
     teacher = torch.nn.DataParallel(teacher).cuda()
-    checkpoint = torch.load("./ck_backup/teachers/100_model_best.pth.tar")
+    checkpoint = torch.load("./ck_backup/teachers/resnext_best.pth.tar")
     teacher.load_state_dict(checkpoint['state_dict'])
     return teacher
 
@@ -47,11 +47,11 @@ def load_expert_networks_and_optimizers(lois,
 
         finetune_experts = True
         if (finetune_experts):
-            eoptimizers[loi] = optim.SGD([{'params': experts[loi].layer1.parameters(), 'lr': 0.001},
-                                        {'params': experts[loi].layer2.parameters(), 'lr': 0.01},
-                                         {'params': experts[loi].layer3.parameters(), 'lr': 0.1},
+            eoptimizers[loi] = optim.SGD([{'params': experts[loi].layer1.parameters(), 'lr': 0.0},
+                                        {'params': experts[loi].layer2.parameters(), 'lr': 0.0},
+                                         {'params': experts[loi].layer3.parameters(), 'lr': 0.01},
                                          {'params': experts[loi].fc.parameters()}],
-                                         lr=0.1, momentum=0.9, weight_decay=5e-4)
+                                         lr=0.01, momentum=0.9, weight_decay=5e-4)
             
         else:
             eoptimizers[loi] = optim.SGD(experts[loi].parameters(), lr=0.1, momentum=0.9,

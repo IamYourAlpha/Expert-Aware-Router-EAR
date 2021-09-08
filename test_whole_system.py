@@ -15,7 +15,6 @@ from ear_model import EAR
 from torchvision import datasets
 from torch.autograd import Variable
 import os
-from mlp import MLP as mlp
 best_correct_test = 0.0
 
 # Use threshold to define predicted labels and invoke sklearn's metrics with different averaging strategies.
@@ -122,7 +121,7 @@ def main():
     # Set all params.
     torch.manual_seed(1)
     device = torch.device("cuda")
-    confusing_classes_dir = os.listdir('F:/Research/PHD_AIZU/tiny_ai/ear/checkpoint_experts/ear_wts/mixed3/')
+    confusing_classes_dir = os.listdir('F:/Research/PHD_AIZU/tiny_ai/ear/checkpoint_experts/ear_wts/r-110-subset/')
     confusing_classes = get_list_of_confuising_classes(confusing_classes_dir)
     #confusing_classes = [[35, 98], [55, 72], [47, 52], [11, 35], [11, 46], [70, 92], [13, 81], [47, 96], [2, 35], [81, 90], [52, 59], [62, 92], [78, 99], [5, 25], [30, 95], [50, 74], [30, 73], [10, 61], [33, 96], [44, 78], [67, 73], [23, 71], [46, 98], [52, 96], [2, 11], [35, 46], [13, 58], [18, 44], [26, 45], [4, 55]]
     dataloc = "F:/Research/PHD_AIZU/tiny_ai/ear/data/c100_combined"

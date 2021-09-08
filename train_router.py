@@ -15,11 +15,11 @@ from ear_model import EAR
 from torchvision import datasets
 from torch.autograd import Variable
 import os
-from mlp import MLP as mlp
+
 best_correct_test = 0.0
 
 # Use threshold to define predicted labels and invoke sklearn's metrics with different averaging strategies.
-def calculate_metrics(pred, target, threshold=0.7):
+def calculate_metrics(pred, target, threshold=0.5):
     pred = np.array(pred > threshold, dtype=float)
     return {'micro/precision': precision_score(y_true=target, y_pred=pred, average='micro'),
             'micro/recall': recall_score(y_true=target, y_pred=pred, average='micro'),
@@ -77,7 +77,7 @@ def test(model, device, test_loader):
     if (result['micro/f1'] > best_correct_test):
         best_correct_test = result['micro/f1']
         best_model_wts = copy.deepcopy(model.state_dict())
-        torch.save(best_model_wts, './router_wts/r60.pth.tar')
+        torch.save(best_model_wts, './router_wts/r8.pth.tar')
         print ("Found New best, saving weights !!")
 
 def test_(model, test_loader):
@@ -141,9 +141,9 @@ def get_list_of_confuising_classes(confusing_classes_dir):
 def main():
     
     # Set all params.
-    torch.manual_seed(1)
+    torch.manual_seed(1) 
     device = torch.device("cuda")
-    confusing_classes_dir = os.listdir('F:/Research/PHD_AIZU/tiny_ai/ear/checkpoint_experts/ear_wts/mixed3/')
+    confusing_classes_dir = os.listdir('F:/Research/PHD_AIZU/tiny_ai/ear/checkpoint_experts/ear_wts/r-110-subset/')
     confusing_classes = get_list_of_confuising_classes(confusing_classes_dir)
     #confusing_classes = [[35, 98], [55, 72], [47, 52], [11, 35], [11, 46], [70, 92], [13, 81], [47, 96], [2, 35], [81, 90], [52, 59], [62, 92], [78, 99], [5, 25], [30, 95], [50, 74], [30, 73], [10, 61], [33, 96], [44, 78], [67, 73], [23, 71], [46, 98], [52, 96], [2, 11], [35, 46], [13, 58], [18, 44], [26, 45], [4, 55]]
     dataloc = "F:/Research/PHD_AIZU/tiny_ai/ear/data/c100_combined"
@@ -185,7 +185,7 @@ def main():
     
     model = models.__dict__['resnet'](
                         num_classes=no_of_labels,
-                        depth=20,
+                        depth=110,
                         block_name='BasicBlock')
     model = model.cuda()
 
@@ -220,7 +220,7 @@ def main():
     loss_fn = nn.BCELoss()#  nn.MultiLabelMarginLoss()
 
    
-    for epoch in range(1, 300):
+    for epoch in range(1, 200):
         train(model, device, train_loader, optimizer, epoch, loss_fn)
         test(model, device, test_loader)
         #test_(router, test_loader_)

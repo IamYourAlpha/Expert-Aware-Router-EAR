@@ -80,12 +80,13 @@ def prepeare_dataset_for_experts(dataset_, matrix, values, train_batch, test_bat
     to sample from specific classes, however with weighted sampler
     we can sampler from all the classes with weight. We can put more
     weight of the expert classes.
+    
     params ----
     matrix: interclass correlation/confusing class matrix
     values: valus correpdonding to the matrix
 
     return ----
-    
+    dataloaders: loaders for the expert networks.
     '''
     
     
@@ -155,7 +156,7 @@ def prepeare_dataset_for_experts(dataset_, matrix, values, train_batch, test_bat
         for sub in matrix:
             weight = class_sample_count / class_sample_count
             for sb in sub:
-                weight[sb] *= 50
+                weight[sb] *= 5
             samples_weight = np.array([weight[t] for t in train_set.targets])
             samples_weight = torch.from_numpy(samples_weight)
             #print ("Samples weight: {} and \n shape: {}".format(samples_weight, len(samples_weight)))

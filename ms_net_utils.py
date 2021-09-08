@@ -371,7 +371,7 @@ def imshow(img, f_name, f_name_no_text, fexpertpred=None, fexpertconf=None, frou
     plt.close()
     
 def save_checkpoint(model_weights, is_best, filename='checkpoint.pth.tar'):
-    filepath = os.path.join("checkpoint_experts", filename)
+    filepath = os.path.join("checkpoint_experts", "temp", filename)
     print (filepath)
     #torch.save(model_weights, filepath)
     if is_best:

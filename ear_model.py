@@ -16,9 +16,9 @@ class EAR(nn.Module):
     def __init__(self, locc):
         super(EAR, self).__init__()
         self.num_experts = len(locc)
-        self.experts = nn.ModuleList([models.__dict__['resnet'](num_classes=100, depth=20, block_name='BasicBlock') for i in range(self.num_experts)])
+        self.experts = nn.ModuleList([models.__dict__['resnet'](num_classes=100, depth=110, block_name='BasicBlock') for i in range(self.num_experts)])
         # load the weights for each experts
-        basename_ = 'F:/Research/PHD_AIZU/tiny_ai/ear/checkpoint_experts/ear_wts/mixed3/'
+        basename_ = 'F:/Research/PHD_AIZU/tiny_ai/ear/checkpoint_experts/ear_wts/r-110-subset/'
         
         for i, wt in enumerate(locc):
           list_of_classes = wt
@@ -38,18 +38,18 @@ class EAR(nn.Module):
         self.prouter.load_state_dict(chk['state_dict'])
 
        
-        self.router = models.__dict__['resnet'](num_classes=self.num_experts, depth=20, block_name='BasicBlock')
+        self.router = models.__dict__['resnet'](num_classes=self.num_experts, depth=110, block_name='BasicBlock')
         self.router = nn.Sequential(
             self.router,
             nn.Sigmoid()
         )
   
-        chk = torch.load('F:/Research/PHD_AIZU/tiny_ai/ear/router_wts/r60.pth.tar')
+        chk = torch.load('F:/Research/PHD_AIZU/tiny_ai/ear/router_wts/r110.pth.tar')
         self.router.load_state_dict(chk)
        
         #assert(self.k <= self.num_experts)
 
-    def forward(self, x, thres=0.7):
+    def forward(self, x, thres=0.5):
 
         '''
         we do not need to predict all the relevant experts correctly.
@@ -62,11 +62,11 @@ class EAR(nn.Module):
         rout = rout.detach().cpu().numpy()
         preds = np.array(rout > thres, dtype=float)
         
-        exp_output = [self.experts[i](x) for i, j in enumerate(preds[0]) if (j)]
-        #exp_output = []
-        #rout_sorted = torch.argsort(rout_temp, dim=1, descending=True)
-        #if (preds[0][rout_sorted[0][0]]):
-        #    exp_output.append(self.experts[rout_sorted[0][0]](x))
+        #exp_output = [self.experts[i](x) for i, j in enumerate(preds[0]) if (j)]
+        exp_output = []
+        rout_sorted = torch.argsort(rout_temp, dim=1, descending=True)
+        if (preds[0][rout_sorted[0][0]]):
+           exp_output.append(self.experts[rout_sorted[0][0]](x))
         exp_output.append(self.prouter(x))
         avg_output = average(exp_output)
         return avg_output

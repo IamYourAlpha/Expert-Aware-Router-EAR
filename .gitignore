@@ -1,11 +1,11 @@
 #data
-/checkpoint/
+/data/
 
-# checkpoints backup
+#checkpoints
+/checkpoint/
+/checkpoint_experts
 /ck_backup/
 
-# training data
-/data/
 
 # caches
 /utils/__pycache__/
@@ -14,9 +14,6 @@
 /utils/images/
 *.pyc
 
-# presentation files
-/ppts/
-*.pptx
 
 # all demo png and csv files
 *.png
